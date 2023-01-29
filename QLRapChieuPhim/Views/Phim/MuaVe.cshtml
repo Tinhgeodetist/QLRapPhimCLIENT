@@ -1,0 +1,75 @@
+﻿@model List<LichChieuModel.Output.ThongTinLichChieu>
+@{
+    ViewData["Title"] = "Đặt mua vé xem phim";
+    var dsRap = (List<PhongModel.RapInfo>)ViewData["DSRap"];
+    var phim = (PhimModel.Output.ThongTinPhim)ViewData["Phim"];
+    var ngayChieu = (DateTime)ViewData["NgayChieu"];
+}
+<link href="~/css/booking.css" type="text/css" rel="stylesheet" />
+<h1 class="page-heading">Đặt mua vé xem phim: <strong>@phim.TenPhim.ToUpper()</strong></h1>
+
+<div class="booking">
+    <div id="step-1">
+        <h3>Chọn Rạp và Suất chiếu</h3>
+        <ul class="toggle-tabs">
+            @for (int i = 0; i < 14; i++)
+            {
+                var ngay = DateTime.Today.AddDays(i);
+                int thu = (int)ngay.DayOfWeek + 1;
+                var tenthu = thu == 1 ? "Chủ nhật" : "Thứ " + thu.ToString();
+                var classname = ngay.ToString("yyyMMdd") == ngayChieu.ToString("yyyyMMdd") ? "current" : "";
+                <li class="@classname" title="@(tenthu + ", ngày " + ngay.ToString("dd/MM/yyyy"))">
+                    <div class="day" onclick="getSelectDay(@phim.Id, '@ngay.ToString("MM/dd/yyyy")');">
+                        <strong>@ngay.ToString("dd")</strong><span>@ngay.ToString("MMM")</span><em>@ngay.ToString("ddd")</em>
+                    </div>
+                </li>
+            }
+        </ul>
+        <div class="showtimes">
+            @if (dsRap.Count > 0)
+            {
+                foreach (var rap in dsRap)
+                {
+                    <div class="site sitecgv">
+                        <div class="site"><h3>@rap.TenRap</h3></div>
+                        <ul class="products-grid-movie tab-showtime">
+                            @foreach (var lichchieu in Model)
+                            {
+                                var parms = new Dictionary<string, string>
+                                {
+                                    { "Id", lichchieu.Id.ToString() },
+                                    { "RapId", rap.Id.ToString() },
+                                    { "TenRap", rap.TenRap }
+                                };
+                                <li class="item">
+                                    <a asp-area="" asp-controller="Phim" asp-action="ChonViTriGhe" asp-all-route-data="parms">
+                                        <span>@lichchieu.SuatChieu.GioBatDau</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="site sitecgv">
+                    <div class="site" style="color: #f76363;"><h3>Chưa có lịch chiếu</h3></div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function getSelectDay(phimid, ngaychon) {
+        var redirectUrl = '/Phim/MuaVe';
+        var form = $('<form action="' + redirectUrl + '" method="post">' +
+            '<input type="hidden" name="id" value="'+ phimid +'" />' +
+            '<input type="hidden" name="ngaychieu" value="' + ngaychon +'" />' +
+            '</form>');
+        $('body').append(form);
+        $(form).submit();
+    }    
+</script>

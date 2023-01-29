@@ -1,0 +1,111 @@
+﻿@model List<RapModel.Output.ThongTinRap>
+@{
+    ViewData["Title"] = "Danh sách Rạp";
+}
+<style>
+    td > span {
+        padding: 5px;
+        display: inline-block;
+    }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                padding-top: 5px;
+                white-space: nowrap;
+                content: attr(data-title);
+            }
+    }
+</style>
+<h2 class="page-heading">Danh Sách Rạp</h2>
+<div class="select-area">
+    <a asp-area="Manage" asp-controller="Rap" asp-action="ThemRap" class="btn btn--success" style="color: #fff; float: right;">
+        <i class="fa fa-plus-square" aria-hidden="true" style="font-size: 16px;"></i> Thêm Rạp mới
+    </a>
+    <div class="clearfix"></div>
+</div>
+@if (Model.Count > 0)
+{
+    var stt = 0;
+    <table class="table-hover table-striped">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên rạp</th>
+                <th>Địa chỉ</th>
+                <th>Điện thoại</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rap in Model)
+            {
+                stt++;
+                <tr>
+                    <td data-title="STT"><span>@stt</span></td>
+                    <td data-title="Hình"><span>@rap.TenRap</span></td>
+                    <td data-title="Liên kết"><span>@rap.DiaChi</span></td>
+                    <td data-title="Kích hoạt"><span>@rap.DienThoai</span></td>
+                    <td data-title="">
+                        <span>
+                            <a asp-area="Manage" asp-controller="Rap" asp-action="CapNhatRap" asp-route-id="@rap.Id" title="Cập nhật thông tin Rạp">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                        <span>
+                            <a asp-area="Manage" asp-controller="Rap" asp-action="XoaRap" asp-route-id="@rap.Id" onclick="return XacNhanXoa(event);" title="Xóa thông tin Rạp">
+                                <i class="fa fa-trash" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div style="font-size: 1.5em; color: #ff0000;">Chưa có thông tin Rạp</div>
+}
+
+<script>
+    function XacNhanXoa(event) {
+        if (!confirm("Bạn có muốn xóa Rạp này không?")) {
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>

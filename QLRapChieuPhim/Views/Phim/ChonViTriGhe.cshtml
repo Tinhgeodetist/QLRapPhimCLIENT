@@ -1,0 +1,184 @@
+﻿@model List<GheModel.Output.ThongTinGhe>
+@{
+    ViewData["Title"] = "Chọn vị trí ghế ngồi";
+    var lichChieu = (LichChieuModel.Output.ThongTinLichChieu)ViewData["LichChieu"];
+    var dsVeKhongChon = (List<VeModel.Output.ThongTinVe>)ViewData["dsVeKhongChon"];
+}
+<link href="~/css/booking.css" type="text/css" rel="stylesheet" />
+<h1 class="page-heading">Đặt mua vé xem phim: <strong>@lichChieu.Phim.TenPhim.ToUpper()</strong></h1>
+
+<div class="booking">
+    <div id="step-2">
+        <h3>Vị trí ngồi (Người/Ghế)</h3>
+        <div class="movie-info">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="poster" rowspan="5"><img src="https://www.cgv.vn/media/catalog/product/cache/1/thumbnail/dc33889b0f8b5da88052ef70de32f1cb/b/t/btdq_main_poster_2.jpg" alt="BÀN TAY DIỆT QUỶ"></td>
+                        <td class="text">Tên phim:</td>
+                        <td class="text-detail">@lichChieu.Phim.TenPhim</td>
+                        <td class="text">Tiền vé:</td>
+                        <td class="text-detail-2"><span class="price">0,00&nbsp;₫</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text">Rạp:</td>
+                        <td class="text-detail">@lichChieu.TenRap</td>
+                        <td class="text">Ghế:</td>
+                        <td class="text-detail-2"><span class="selectedtype"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="text">Suất chiếu:</td>
+                        <td class="text-detail">@(lichChieu.SuatChieu.GioBatDau), @lichChieu.NgayChieu.ToString("dd/MM/yyyy")</td>
+                        <td class="text">&nbsp;</td>
+                        <td class="text-detail-2">
+                            <span class="seats-list"></span>
+                            <input type="hidden" id="dsId" value="" />
+                            <input type="hidden" id="lichchieu" value="@lichChieu.Id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text">Phòng chiếu:</td>
+                        <td class="text-detail">@lichChieu.Phong.TenPhong</td>
+                        <td class="text">&nbsp;</td>
+                        <td class="text-detail-2"><button id="btnmuave" type="button" class="btn btn-success hidden" onclick="checkTickets()"><i class="fa fa-check-square-o" aria-hidden="true"></i> Xác nhận mua vé</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="seat-type">
+            <div class="screen">&nbsp;</div>
+            @for (int i = 0; i < lichChieu.Phong.TongSoDay; i++)
+            {
+        <div class="row">
+            @for (int j = 1; j <= lichChieu.Phong.TongSoHang; j++)
+            {
+                var ghe = Model.FirstOrDefault(x => x.Day == i && x.Hang == j);
+                if (ghe != null)
+                {
+                    var ghekhongchon = dsVeKhongChon.FirstOrDefault(x => x.GheId.Equals(ghe.Id));
+                    if (ghekhongchon == null)
+                        if (ghe.GheVip)
+                        {
+                            <div class="seat active seat-vipprime" onclick="selectedseats(this)" zone="vipprime" loc="@(i),@j" data-id="@ghe.Id" price="@ghe.LoaiGhe.GiaVe*">@ghe.SoGhe</div>
+                        }
+                        else
+                        {
+                            <div class="seat active seat-standard" onclick="selectedseats(this)" zone="standard" loc="@(i),@j" data-id="@ghe.Id" price="@ghe.LoaiGhe.GiaVe">@ghe.SoGhe</div>
+                        }
+                    else
+                        if (ghekhongchon.TinhTrang == 3)
+                        {
+                            <div class="seat seat-unavailable" loc="@(i),@j" data-id="@ghe.Id" price="0"></div>
+                        }
+                        else
+                        {
+                            <div class="seat seat-disable" loc="@(i),@j" data-id="@ghe.Id" price="">@ghe.SoGhe</div>
+                        }
+                }
+                else
+                {
+                    <div class="seat empty">S</div>
+                }
+            }
+        </div>
+            }
+        </div>
+        <div class="seat-notice">
+            <div class="iconlist">
+                <div class="icon checked">Đang chọn</div>
+                <div class="icon occupied">Đã bán</div>
+                <div class="icon unavailable">Không thể chọn</div>
+            </div>
+
+            <div class="iconlist">
+                <div class="icon zone-standard">Ghế thường</div>
+                <div class="icon zone-vipprime">Ghế VIP(Prime)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    Number.prototype.format = function (n, x, s, c) {
+        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
+            num = this.toFixed(Math.max(0, ~~n));
+
+        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+    };
+    function selectedseats(ghe) {
+        var loaighe = "";
+        var soluong = 0;
+        var tienve = 0;
+        var cacghechon = "";
+        $('.seat.active').each(function () {
+            if ($(this).hasClass("checked")) {
+                loaighe = $(this).attr("zone");
+                soluong++;
+            }
+        });
+        if (soluong == 8)
+            alert("Bạn chỉ có thể chọn tối đa 8 ghế");
+        else if (loaighe != "" && $(ghe).attr("zone") != loaighe)
+            alert("Vui lòng chọn tất cả các loại ghế cùng loại");
+        else {
+            if ($(ghe).hasClass("checked"))
+                $(ghe).removeClass("checked");
+            else
+                $(ghe).addClass("checked");
+
+        }
+        loaighe = "";
+        var dsid = "";
+        $('.seat.active').each(function () {
+            if ($(this).hasClass("checked")) {
+                loaighe = $(this).attr("zone");
+                tienve += parseInt($(this).attr("price"));
+                cacghechon += $(this).text() + ", ";
+                dsid += $(this).attr("data-id") + ",";
+            }
+        });
+        if (cacghechon != "")
+            cacghechon = cacghechon.substr(0, cacghechon.length - 2);
+        if (dsid != "")
+            dsid = dsid.substr(0, dsid.length - 1);
+        $('span.price').html(tienve.format(2, 3, '.', ',') + " ₫");
+        $('span.selectedtype').html(loaighe);
+        $('span.seats-list').html(cacghechon);
+        $('#dsId').val(dsid);
+        if ($('span.seats-list').html() != "") 
+            $('#btnmuave').show();
+        else
+            $('#btnmuave').hide();
+    }
+    function checkTickets() {
+        var dsve = $('span.seats-list').html();
+        if (dsve != "") {
+            var ves = dsve.split(', ');
+            var kyhieu = '';
+            var sott = 0;
+            var ghetrong = '';
+            ves.forEach(function(item, index) {
+                if (item.substr(0, 1) != kyhieu) {
+                    kyhieu = item.substr(0, 1);
+                    sott = parseInt(item.substr(1));
+                }
+                else
+                    if (parseInt(item.substr(1)) > sott + 1) 
+                        ghetrong += kyhieu + (sott + 1) + ",";
+                    else
+                        sott = parseInt(item.substr(1));
+            });
+            if (ghetrong != "")
+                alert('Không được để trống ghế ' + ghetrong.substr(0, ghetrong.length - 1));
+            else {
+                var redirectUrl = '/Phim/XacNhanMuaVe';
+                var form = $('<form action="' + redirectUrl + '" method="post">' +
+                    '<input type="hidden" name="danhsachidghe" value="' + $('#dsId').val() + '" />' +
+                    '<input type="hidden" name="lichchieuid" value="' + $('#lichchieu').val() + '" />' +
+                    '</form>');
+                $('body').append(form);
+                $(form).submit();
+            }
+        }
+    }
+</script>

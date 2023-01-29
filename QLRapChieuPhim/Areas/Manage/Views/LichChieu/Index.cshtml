@@ -1,0 +1,143 @@
+﻿@model List<LichChieuModel.Output.ThongTinLichChieu>
+@{
+    ViewData["Title"] = "Danh sách lịch chiếu";
+    var dsRap = (List<RapModel.Output.ThongTinRap>)ViewData["DSRAP"];
+}
+<style>
+    /*
+    Max width before this PARTICULAR table gets nasty. This query will take effect for any screen smaller than 760px and also iPads specifically.
+    */
+    td > span {
+        padding: 5px;
+        display: inline-block;
+    }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                padding-top: 5px;
+                white-space: nowrap;
+                content: attr(data-title);
+            }
+    }
+
+    .category-filter {
+        padding: 7px 25px 7px 10px;
+        border: 1px solid #ced0da;
+        color: #43464b;
+    }
+</style>
+<h2 class="page-heading">Danh Sách Lịch Chiếu</h2>
+<div class="select-area">
+    <form method='get' id="myform" asp-area="Manage" asp-controller="LichChieu" asp-action="Index" asp-route-rapid="@(ViewData["RapId"] != null?ViewData["RapId"]:1)">
+        <label for="category">Rạp chiếu phim: </label>
+        <select id="RapId" name="RapId" class="category-filter" tabindex="0" onchange="myform.submit()">
+            @foreach (var rap in dsRap)
+            {
+                if (ViewData["RapId"] != null && rap.Id.ToString() == ViewData["RapId"].ToString())
+                {
+                    <option value="@rap.Id" selected='selected'>@rap.TenRap</option>
+                }
+                else
+                {
+                    <option value="@rap.Id">@rap.TenRap</option>
+                }
+            }
+
+        </select>
+        <a asp-area="Manage" asp-controller="LichChieu" asp-action="ThemLichChieu" asp-route-rapid="@(ViewData["RapId"] != null?ViewData["RapId"]:1)" class="btn btn--success" style="color: #fff; float: right;">
+            <i class="fa fa-plus-square" aria-hidden="true" style="font-size: 16px;"></i> Thêm lịch chiếu mới
+        </a>
+        <div class="clearfix"></div>
+    </form>
+
+</div>
+@if (Model.Count > 0)
+{
+    var stt = 0;
+    <table class="table-hover table-striped">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Ngày chiếu</th>
+                <th>Tên phim</th>
+                <th>Phòng chiếu</th>
+                <th>Giờ bắt đầu</th>
+                <th>Giờ kết thúc</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lichchieu in Model)
+            {
+                stt++;
+            <tr>
+                <td data-title="STT"><span>@stt</span></td>
+                <td data-title="Ngày chiếu"><span>@lichchieu.NgayChieu.ToString("dd/MM/yyyy")</span></td>
+                <td data-title="Tên phim"><span>@lichchieu.Phim.TenPhim</span></td>
+                <td data-title="Phòng chiếu"><span>@lichchieu.Phong.TenPhong</span></td>
+                <td data-title="Giờ bắt đầu"><span>@lichchieu.SuatChieu.GioBatDau</span></td>
+                <td data-title="Giờ kết thúc"><span>@lichchieu.SuatChieu.GioKetThuc</span></td>
+                <td data-title="">
+                    <span>
+                        <a asp-area="Manage" asp-controller="LichChieu" asp-action="CapNhatLichChieu" asp-route-id="@lichchieu.Id" asp-route-rapid="@(ViewData["RapId"] != null?ViewData["RapId"]:1)" title="Cập nhật lịch chiếu">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true" style="font-size: 16px;"></i>
+                        </a>
+                    </span>
+                    <span>
+                        <a asp-area="Manage" asp-controller="LichChieu" asp-action="XoaLichChieu" asp-route-id="@lichchieu.Id" onclick="return XacNhanXoa(event);" title="Xóa Lịch Chiếu">
+                            <i class="fa fa-trash" aria-hidden="true" style="font-size: 16px;"></i>
+                        </a>
+                    </span>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div style="font-size: 1.5em; color: #ff0000;">Chưa có thông tin lịch chiếu</div>
+}
+
+<script>
+    function XacNhanXoa(event) {
+        if (!confirm("Bạn có muốn xóa Lịch chiếu này không?")) {
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>

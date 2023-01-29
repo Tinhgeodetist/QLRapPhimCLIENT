@@ -1,0 +1,130 @@
+﻿@model List<RapModel.Output.ThongTinRap>
+@{
+    ViewData["Title"] = "Hệ thống rạp";
+}
+
+<style>
+    .navbar ul.navbar-nav a.nav-link {
+        font-size: 16px;
+    }
+
+    main {
+        padding-top: 55px;
+    }
+
+    .movie {
+        border: 1px solid;
+        box-shadow: 5px 6px #888888;
+        padding: 20px;
+    }
+
+    .list-rap {
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .col-left {
+        width: 39%;
+        float: left;
+        padding: 5px;
+    }
+
+    .col-right {
+        width: 60%;
+        float: left;
+        padding: 5px;
+        height: 400px;
+        position: relative;
+    }
+
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
+
+<!-- Main content -->
+<section class="container">
+    <div class="col-sm-12">
+        <div class="movie">
+            @if (Model != null && Model.Count > 0) {
+                <h2 class="page-heading">Hệ thống rạp</h2>
+                <div class="col-sm-12">
+                    <p class="movie__option">
+                        <strong>Chọn rạp: </strong>
+                        <select class="list-rap" id="hethongrap">
+                            @foreach (var rap in Model) {
+                                <option data-long="@rap.KinhDo" data-lat="@rap.ViDo" value="@rap.Id">
+                                    @rap.TenRap
+                                </option>
+                            }
+                        </select>
+                    </p>
+                </div>
+
+                <div class="clearfix"></div>
+                <h4 style="padding: 5px 15px; margin: 40px 0 10px 0;">Thông tin chi tiết</h4>
+                <div class="col-sm-12">
+                    <div class="col-left">
+                        <p class="movie__option"><strong>Địa chỉ: </strong>@Model[0].DiaChi</p>
+                        <p class="movie__option"><strong>Điện thoại: </strong>@Model[0].DienThoai</p>
+                        <p class="movie__option"><strong>Email: </strong>@Model[0].Email</p>
+                        <input type="hidden" id="kinhdo" value="@Model[0].KinhDo" />
+                        <input type="hidden" id="vido" value="@Model[0].ViDo" />
+                    </div>
+                    <div class="col-right">
+                        <div id="map"></div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                
+            }
+            else {
+                <h3>Chưa có thông tin rạp</h3>
+            }
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function hienthimap(kinhdo, vido) {
+        mapboxgl.accessToken = 'pk.eyJ1IjoidG50YW4iLCJhIjoiY2tvY2EweGMwMmNpazJvczdkZ214ajFhNSJ9.Sl_wtwr33gk0zcZt2qAY-g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [kinhdo, vido],
+            zoom: 15
+        });
+
+        // Create a default Marker and add it to the map.
+        var marker = new mapboxgl.Marker()
+            .setLngLat([kinhdo, vido])
+            .addTo(map);
+
+    }
+    $(document).ready(function () {
+        if ($('#kinhdo').val() != "" && $('#vido').val() != "") {
+            hienthimap($('#kinhdo').val(), $('#vido').val());
+        }
+        $('#hethongrap').change(function () {
+            var kinhdo = $("#hethongrap option:selected").attr("data-long");
+            var vido = $("#hethongrap option:selected").attr("data-lat");
+            $('#kinhdo').val(kinhdo);
+            $('#vido').val(vido);
+            hienthimap(kinhdo, vido);
+        });
+    });
+
+</script>
+

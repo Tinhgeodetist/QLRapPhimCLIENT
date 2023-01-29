@@ -1,0 +1,58 @@
+﻿@model ThongBaoModel
+@{
+    ViewData["Title"] = "Xác nhận mua vé";
+}
+
+<style>
+    .navbar ul.navbar-nav a.nav-link {
+        font-size: 16px;
+    }
+
+    main {
+        padding-top: 55px;
+    }
+
+    .movie {
+        border: 1px solid;
+        box-shadow: 5px 6px #888888;
+        padding: 20px;
+    }
+
+        .movie .page-heading {
+            margin-top: 10px !important;
+        }
+
+        .movie .thanhcong {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #c7082b;
+        }
+</style>
+<!-- Main content -->
+<section class="container">
+    <div class="col-sm-12">
+        <div class="movie">
+            @if (Model != null && Model.MaSo == 0)
+            {
+                var lichChieu = (LichChieuModel.Output.ThongTinLichChieu)ViewData["LichChieu"];
+                <h2 class="page-heading">Xác nhận mua vé xem phim</h2>
+                <div class="thanhcong">Chúc mừng, bạn đã đăng ký vé xem phim thành công. Thông tin chi tiết:</div>
+                <div class="">
+                    <p class="movie__option"><strong>Tên phim: @lichChieu.Phim.TenPhim.ToUpper() </strong></p>
+                    <p class="movie__option"><strong>Suất chiếu: @lichChieu.SuatChieu.GioBatDau, @lichChieu.NgayChieu.ToString("dd/MM/yyyy")</strong></p>
+                    <p class="movie__option"><strong>Tên rạp: @lichChieu.TenRap</strong></p>
+                    <p class="movie__option"><strong>Phòng chiếu: @lichChieu.Phong.TenPhong</strong></p>
+                    <p class="movie__option"><strong>Số vé: @ViewData["SoVe"]</strong></p>
+                </div>
+            }
+            else
+            {
+                <h3>@Model.NoiDung</h3>
+            }
+        </div>
+
+    </div>
+</section>
+<div class="clearfix"></div>
+
+

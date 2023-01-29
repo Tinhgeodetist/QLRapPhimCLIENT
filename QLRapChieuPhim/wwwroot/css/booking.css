@@ -1,0 +1,222 @@
+﻿body {
+}
+.booking ul.toggle-tabs {
+    border-bottom: 2px solid #2b2b2b;
+    border-top: 2px solid #2b2b2b;
+    display: inline-block;
+    margin: 0;
+    padding: 20px 0;
+}
+    .booking ul.toggle-tabs li {
+        border: 2px solid #fff;
+        border-radius: 5px;
+        float: left;
+    }
+        .booking ul.toggle-tabs li.current, .booking ul.toggle-tabs li:hover {
+            border: 2px solid #222;
+            border-radius: 5px;
+            color: red;
+        }
+ul.toggle-tabs .day {
+    color: #717171;
+    cursor: pointer;
+    height: 48px;
+    position: relative;
+    width: 87px;
+    border: 2px solid #fdfcf0;
+    border-radius: 5px;
+}
+    ul.toggle-tabs .day > strong {
+        color: #717171;
+        font-size: 32px;
+        font-weight: normal;
+        left: 6px;
+        line-height: 32px;
+        position: absolute;
+        top: 6px;
+    }
+    ul.toggle-tabs .day > span, ul.toggle-tabs .day > em {
+        color: #717171;
+        font-size: 11px;
+        left: 50px;
+        position: absolute;
+    }
+        ul.toggle-tabs .day > span {
+            top: 6px;
+        }
+        ul.toggle-tabs .day > em {
+            top: 24px;
+        }
+.booking ul.toggle-tabs li.current strong, .booking ul.toggle-tabs li.current span, .booking ul.toggle-tabs li.current em {
+    color: #f76363 !important;
+}
+.booking ul.toggle-tabs .day:hover > strong, .booking ul.toggle-tabs .day:hover > span, .booking ul.toggle-tabs .day:hover > em {
+    color: #f76363 !important;
+}
+.booking .showtimes {
+    padding: 15px;
+}
+.tab-showtime {
+    display: inline-block;
+    width: 100%;
+}
+.showtimes .site h3 {
+    font-weight: 400;
+    color: #636363;
+    margin: 0;
+    margin-bottom: 15px;
+}
+.tab-showtime li {
+    border: 1px solid #222;
+    padding: 5px 10px;
+    float: left;
+    margin-right: 10px;
+    text-align: center;
+    margin-top: 3px;
+}
+    .tab-showtime li.item {
+        border: 1px solid #cbcabe;
+        color: #222;
+        text-align: center;
+        float: left;
+    }
+        .tab-showtime li.item:hover {
+            border: 1px solid #222;
+        }
+    .tab-showtime li.last::after {
+        content: "";
+        clear: both;
+    }
+.booking .movie-info td.poster {
+    width: 100px;
+    padding: 0 10px;
+}
+    .booking .movie-info td.poster > img {
+        width: 100%;
+        max-height: 122px;
+    }
+.booking .movie-info td.text {
+    width: 100px;
+}
+.booking .movie-info td.text-detail {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.booking .movie-info td.text-detail-2 {
+    font-weight: bold;
+    font-size: 1.2em;
+    width: 300px;
+}
+.screen {
+    width: 100%;
+    height: 45px;
+    margin: 20px auto 40px;
+    text-align: center;
+    background: url(img/bg-screen.png) no-repeat top center transparent;
+    background-size: 100% auto;
+}
+.seat-notice {
+    overflow: hidden;
+    text-align: center;
+    margin-top: 20px;
+}
+.iconlist {
+    display: inline-block;
+    min-width: 25%;
+    vertical-align: top;
+}
+.iconlist > .icon {
+    text-align: left;
+    margin: 5px 0;
+}
+    .iconlist > .icon:before {
+        content: "";
+        display: inline-block;
+        vertical-align: middle;
+        width: 18px;
+        height: 18px;
+        margin: 0 5px 0 0;
+    }
+    .iconlist > .icon.checked:before {
+        background: #b11500;
+    }
+    .iconlist > .icon.occupied:before {
+        background: #bbb;
+    }
+    .iconlist > .icon.unavailable:before {
+        background: #bbb;
+        content: "X";
+        text-align: center;
+        color: #fff;
+    }
+    .iconlist > .icon.zone-standard:before {
+        border: 1px solid #01c73c;
+    }
+    .iconlist > .icon.zone-vipprime:before {
+        border: 1px solid #f71708;
+    }
+.movie-info {
+    border-bottom: 2px solid #2b2b2b;
+    border-top: 2px solid #2b2b2b;
+    padding: 10px 0;
+}
+.seat-type {
+    overflow-x: auto;
+    text-align: center;
+}
+    .seat-type .row {
+        margin: 2px;
+        display: block;
+    }
+    .seat-type .seat {
+        display: inline-block;
+        border: 1px solid transparent;
+        width: 25px;
+        height: 25px;
+        vertical-align: middle;
+        font-size: 8pt;
+        margin: 0 1px;
+        padding: 5px 0;
+    }
+.seat.empty {
+    visibility: hidden;
+}
+.seat.active {
+    cursor: pointer;
+}
+.seat.seat-disable {
+    background: #bbb;
+    border: 1px solid #bbb;
+    color: #fff;
+}
+.seat.seat-standard {
+    border: 1px solid #01c73c;
+}
+.seat.seat-vipprime {
+    border: 1px solid #f71708;
+}
+.seat.checked {
+    background: #b11500;
+    color: #fff;
+    border-color: #b11500;
+}
+.seat.seat-unavailable {
+    background: #bbb;
+    color: #fff;
+}
+    .seat.seat-unavailable:before {
+        content: "X";
+        font-size: 1.2em;
+    }
+.hidden {
+    display: none;
+}
+@media only screen and (min-width: 771px) {
+    .booking .toggle-tabs {
+        width: 100%;
+        position: relative;
+        background: transparent;
+        border: medium none;
+        text-align: center;
+    }
+}

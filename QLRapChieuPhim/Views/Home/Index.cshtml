@@ -1,0 +1,177 @@
+﻿@model HomeFrontendModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .tp-bannertimer {
+        display: none;
+    }
+    .movies-group {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+        .movies-group .title-movie {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .movies-group .article-movie-home {
+            position: relative;
+            -webkit-transition: all 300ms;
+            transition: all 300ms;
+            display: table;
+            margin: auto;
+        }
+            .movies-group .article-movie-home img {
+                max-width: 100%;
+                max-height: 260px;
+                display: table-cell;
+            }
+            .movies-group .article-movie-home .overlay {
+                z-index: 99;
+                width: 100%;
+                height: 100%;
+                -webkit-transition: all 300ms;
+                transition: all 300ms;
+                opacity: 0;
+                background-color: rgba(0, 0, 0, 0.7);
+            }
+                .movies-group .article-movie-home .overlay:hover{
+                    opacity:1;
+                }
+            .movies-group .article-movie-home .decription-hover {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .movies-group .article-movie-home .movies-content {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100%;
+                -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                text-align: center;
+            }
+        .movies-group .title-movie h4 {
+            font-size: 16px;
+            color: #43464b;
+            text-transform: capitalize;
+            line-height: 20px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            text-transform: uppercase !important;
+            margin: 5px 0;
+        }
+            .movies-group .title-movie h4.vn {
+                color: #a0a3a7;
+            }
+    .article-movie-home .nmovie-rating {
+        position: absolute;
+        z-index: 100;
+        width: 45px;
+        height: 30px;
+        top: 5px;
+        left: 5px;
+        font-size: 0px;
+        background: url(../images/bg-movie-rating.png) no-repeat scroll top left transparent;
+        border: 1px solid #fff;
+    }
+        .article-movie-home .nmovie-rating.nmovie-rating-no {
+            background: none;
+        }
+        .article-movie-home .nmovie-rating.nmovie-rating-p {
+            background-position: -3px -2px;
+        }
+        .article-movie-home .nmovie-rating.nmovie-rating-c18 {
+            background-position: -144px -2px;
+        }
+        .article-movie-home .nmovie-rating.nmovie-rating-c16 {
+            background-position: -97px -2px;
+        }
+        .article-movie-home .nmovie-rating.nmovie-rating-c13 {
+            background-position: -50px -2px;
+        }
+    .btn.secondary-white {
+        display: inline-block;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #ffffff;
+        font-weight: 400;
+        border: 1px solid #ffffff;
+        padding: 10px;
+        text-decoration: none;
+        line-height: 1;
+        margin: 5px;
+    }
+        .btn.secondary-white:hover {
+            background-color: #f38383;
+        }
+</style>
+<!-- Slider -->
+<div class="container-fluid bannercontainer ">
+    <!-- the ID here will be used in the JavaScript below to initialize the slider -->
+    @if (Model.DanhSachBanner != null && Model.DanhSachBanner.Count > 0)
+    {
+        <div id="rev_slider_1" class="banner rev_slider" style="display:none">
+            <!-- BEGIN SLIDES LIST -->
+            <ul>
+                @foreach (var slide in Model.DanhSachBanner)
+                {
+                    <li data-transition="fade" class="slide" data-title='@slide.Ten'>
+                        <img class="rev-slidebg" alt='' src="@slide.Hinh">
+                    </li>
+                }
+            </ul><!-- END SLIDES LIST -->
+        </div><!-- END SLIDER CONTAINER -->
+    }
+</div>
+<!--end slider -->
+<!-- Phim Đang chiếu -->
+@if (Model.DanhSachPhimDangChieu != null && Model.DanhSachPhimDangChieu.Count > 0)
+{
+    <h2 class="page-heading">Phim đang chiếu</h2>
+    <div class="row movies-group">
+        @foreach (var phim in Model.DanhSachPhimDangChieu)
+        {
+            <div class="col-md-3 col-sm-3 col-xs-6 movie-item">
+                <div class="article-movie-home">
+                    <img src="data:image/png;base64, @phim.Poster" />
+                    <span class="nmovie-rating nmovie-rating-@phim.XepHangPhim.KyHieu.ToLower()" title="@phim.XepHangPhim.Ten">
+                        @phim.XepHangPhim.KyHieu
+                    </span>
+                    <div class="decription-hover overlay">
+                        <div class="movies-content">
+                            <div class="group">
+                                <a asp-area="" asp-controller="Phim" asp-action="MuaVe" asp-route-id="@phim.Id">
+                                    <div class="btn secondary-white">mua vé</div>
+                                </a>                                
+                                @if (!string.IsNullOrEmpty(phim.Trailer))
+                                {
+                                    <div class="btn secondary-white btn-trailer" data-url="@phim.Trailer">Trailer</div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="title-movie">
+                    <a asp-area="" asp-controller="Phim" asp-action="ThongTinPhim" asp-route-id="@phim.Id">
+                        @if (!string.IsNullOrEmpty(phim.TenGoc))
+                        {
+                            <h4>@phim.TenGoc</h4>
+                            <h4 class="vn">@phim.TenPhim</h4>
+                        }
+                        else
+                        {
+                            <h4>@phim.TenPhim</h4>
+                            <h4 class="vn"></h4>
+                        }
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+<!-- end Phim Đang chiếu -->

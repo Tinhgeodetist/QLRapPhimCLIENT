@@ -1,0 +1,131 @@
+﻿@model List<ThongTinGheModel.Output.ThongTinGhe>
+@{
+    ViewData["Title"] = "Thông tin các dãy ghế trong phòng";
+    var phong = ViewData["Phong"] as PhongModel.Output.ThongTinPhong;
+}
+<style>
+    td > span {
+        padding: 5px;
+        display: inline-block;
+    }
+    .phong-info {
+        margin: 5px 0;
+        display: inline-block;
+    }
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                padding-top: 5px;
+                white-space: nowrap;
+                content: attr(data-title);
+            }
+    }
+
+    .category-filter {
+        padding: 7px 25px 7px 10px;
+        border: 1px solid #ced0da;
+        color: #43464b;
+    }
+</style>
+<h2 class="page-heading">Thông tin các dãy ghế Phòng Chiếu</h2>
+<div class="select-area">
+    <form method='get' id="myform" asp-area="Manage" asp-controller="Phong" asp-action="Index" asp-route-rapid="@(ViewData["RapId"] != null?ViewData["RapId"]:1)">
+        <h4 class="phong-info">Phòng chiếu: @phong.TenPhong</h4>
+        <a asp-area="Manage" asp-controller="Phong" asp-action="ThemThongTinGhe" asp-route-id="@phong.Id" class="btn btn--success" style="color: #fff; float: right;">
+            <i class="fa fa-plus-square" aria-hidden="true" style="font-size: 16px;"></i> Thêm thông tin dãy ghế mới
+        </a>
+        <div class="clearfix"></div>
+    </form>
+
+</div>
+@if (Model.Count > 0)
+{
+    var stt = 0;
+    <table class="table-hover table-striped">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Ký hiệu dãy</th>
+                <th>Số lượng ghế</th>
+                <th>Vị trí dãy</th>
+                <th>Hàng đầu dãy</th>
+                <th>Loại ghế</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var thongtin in Model)
+            {
+                stt++;
+            <tr>
+                <td data-title="STT"><span>@stt</span></td>
+                <td data-title="Tên phòng chiếu"><span>@thongtin.KyHieu</span></td>
+                <td data-title="Số lượng ghế"><span>@thongtin.SoGhe</span></td>
+                <td data-title="Vị trí dãy"><span>@thongtin.Day</span></td>
+                <td data-title="Hàng đầu dãy"><span>@thongtin.Hang</span></td>
+                <td data-title="Loại ghế"><span>@thongtin.LoaiGhe.TenLoaiGhe</span></td>
+                <td data-title="">
+                    <span>
+                        <a asp-area="Manage" asp-controller="Phong" asp-action="CapNhatThongTinGhe" asp-route-id="@thongtin.Id" title="Cập nhật thông tin dãy ghế">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true" style="font-size: 16px;"></i>
+                        </a>
+                    </span>
+                    <span>
+                        <a asp-area="Manage" asp-controller="Phong" asp-action="XoaThongTinGhe" asp-route-id="@thongtin.Id" onclick="return XacNhanXoa(event);" title="Xóa thông tin dãy ghế">
+                            <i class="fa fa-trash" aria-hidden="true" style="font-size: 16px;"></i>
+                        </a>
+                    </span>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div style="font-size: 1.5em; color: #ff0000;">Chưa có thông tin các dãy ghế trong phòng chiếu</div>
+}
+
+<script>
+    function XacNhanXoa(event) {
+        if (!confirm("Bạn có muốn xóa thông tin dãy ghế này không?")) {
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>
+
+

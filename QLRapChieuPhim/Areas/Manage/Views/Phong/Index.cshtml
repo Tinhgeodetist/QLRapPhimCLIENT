@@ -1,0 +1,169 @@
+﻿@model List<PhongModel.Output.ThongTinPhong>
+@{
+    ViewData["Title"] = "Danh sách phòng chiếu";
+    var dsRap = (List<RapModel.Output.ThongTinRap>)ViewData["DSRAP"];
+}
+<style>
+    /*
+    Max width before this PARTICULAR table gets nasty. This query will take effect for any screen smaller than 760px and also iPads specifically.
+    */
+    td > span {
+        padding: 5px;
+        display: inline-block;
+    }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                padding-top: 5px;
+                white-space: nowrap;
+                content: attr(data-title);
+            }
+    }
+
+    .category-filter {
+        padding: 7px 25px 7px 10px;
+        border: 1px solid #ced0da;
+        color: #43464b;
+    }
+</style>
+<h2 class="page-heading">Danh Sách Phòng Chiếu</h2>
+<div class="select-area">
+    <form method='get' id="myform" asp-area="Manage" asp-controller="Phong" asp-action="Index" asp-route-rapid="@(ViewData["RapId"] != null?ViewData["RapId"]:1)">
+        <label for="category">Rạp chiếu phim: </label>
+        <select id="RapId" name="RapId" class="category-filter" tabindex="0" onchange="myform.submit()">
+            @foreach (var rap in dsRap)
+            {
+                if (ViewData["RapId"] != null && rap.Id.ToString() == ViewData["RapId"].ToString())
+                {
+                    <option value="@rap.Id" selected='selected'>@rap.TenRap</option>
+                }
+                else
+                {
+                    <option value="@rap.Id">@rap.TenRap</option>
+                }
+            }
+
+        </select>
+        <a asp-area="Manage" asp-controller="Phong" asp-action="ThemPhong" class="btn btn--success" style="color: #fff; float: right;">
+            <i class="fa fa-plus-square" aria-hidden="true" style="font-size: 16px;"></i> Thêm phòng chiếu mới
+        </a>
+        <div class="clearfix"></div>
+    </form>
+
+</div>
+@if (Model.Count > 0)
+{
+    var stt = 0;
+    <table class="table-hover table-striped">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên phòng</th>
+                <th>Số lượng ghế</th>
+                <th>Ghi chú</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var phong in Model)
+            {
+                stt++;
+                <tr>
+                    <td data-title="STT"><span>@stt</span></td>
+                    <td data-title="Tên phòng chiếu"><span>@phong.TenPhong</span></td>
+                    <td data-title="Số lượng ghế"><span>@phong.SoLuongGhe</span></td>
+                    <td data-title="Ghi chú"><span>@phong.GhiChu</span></td>
+                    <td data-title="">
+                        <span>
+                            <a asp-area="Manage" asp-controller="Phong" asp-action="CapNhatPhong" asp-route-id="@phong.Id" title="Cập nhật phòng chiếu">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                        <span>
+                            <a asp-area="Manage" asp-controller="Phong" asp-action="ThongTinGhe" asp-route-id="@phong.Id" title="Thông tin ghế trong phòng">
+                                <i class="fa fa-th-list" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                        <span>
+                            <a asp-area="Manage" asp-controller="Phong" asp-action="PhatSinhGhe" asp-route-id="@phong.Id" title="Phát sinh vị trí ghề ngồi trong phòng">
+                                <i class="fa fa-random" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                        <span>
+                            <a asp-area="Manage" asp-controller="Phong" asp-action="XoaPhong" asp-route-id="@phong.Id" onclick="return XacNhanXoa(event);" title="Xóa Phòng Chiếu">
+                                <i class="fa fa-trash" aria-hidden="true" style="font-size: 16px;"></i>
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div style="font-size: 1.5em; color: #ff0000;">Chưa có thông tin phòng chiếu</div>
+}
+
+@if (TempData["ThongBao"] != null && TempData["ThongBao"].ToString() != "")
+{
+    <div id="dialog-message" title="Thông báo">
+        <div style="margin: 10px 0;">
+            @Html.Raw(TempData["ThongBao"].ToString())
+        </div>
+    </div>
+    TempData["ThongBao"] = "";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dialog-message").dialog({
+            modal: true,
+            buttons: {
+                Ok: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    function XacNhanXoa(event) {
+        if (!confirm("Bạn có muốn xóa Phòng chiếu này không?")) {
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>
